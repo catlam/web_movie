@@ -15,9 +15,11 @@ function MoviesList() {
     const { isLoading, isError, movies, pages, page } = useSelector(
         (state) => state.getAllMovies
     );
+    // delete movie
     const { isLoading: deleteLoading, isError: deleteError } = useSelector(
         (state) => state.deleteMovie
     );
+    // delete all movies
     const { isLoading: allLoading, isError: allError } = useSelector(
         (state) => state.deleteAllMovies
     );
@@ -26,14 +28,16 @@ function MoviesList() {
     const deleteMovieHandler = (id) => {
         if (window.confirm("Are you sure you want to delete this movie?")) {
             dispatch(deleteMovieAction(id)).then(() => {
-                // Sau khi xóa thành công, gọi lại danh sách phim
-                dispatch(getAllMoviesAction({ pageNumber: page })); 
+                dispatch(getAllMoviesAction({ pageNumber: page }));
             });
         }
     }
     const deleteAllMoviesHandler = () => {
-        window.confirm("Are you sure you want to delete all movies?") &&
-            dispatch(deleteAllMoviesAction());
+        if (window.confirm("Are you sure you want to delete all movies?")) {
+            dispatch(deleteAllMoviesAction()).then(() => {
+                dispatch(getAllMoviesAction({ pageNumber: page }));
+            });
+        }
     }
 
     // useEffect

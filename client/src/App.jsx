@@ -33,55 +33,55 @@ function App() {
   const dispatch = useDispatch();
   const { userInfo } = useSelector((state) => state.userLogin);
   const { isError, isSuccess } = useSelector((state) => state.userLikeMovie);
-  const { isError: catError } = useSelector((state) => state.categoryGetAll );
+  const { isError: catError } = useSelector((state) => state.categoryGetAll);
 
 
   useEffect(() => {
     dispatch(getAllCategoriesAction())
     dispatch(getAllMoviesAction({}))
-    if (userInfo){
+    if (userInfo) {
       dispatch(getFavoriteMoviesAction())
     }
-    if(isError || catError){
+    if (isError || catError) {
       toast.error("Something went wrong, please try again")
       dispatch({ type: 'LIKE_MOVIE_RESET' })
     }
-    if(isSuccess){
-      dispatch({ type: "LIKE_MOVIE_RESET"})
+    if (isSuccess) {
+      dispatch({ type: "LIKE_MOVIE_RESET" })
     }
   }, [dispatch, userInfo, isError, catError, isSuccess])
 
   return (
     <>
-      <ToastContainer/>
+      <ToastContainer />
       <ScrollOnTop>
         <Routes>
-            {/***********PUBLIC ROUTERS***************/}
-            <Route path="/" element={<HomeScreen />} />
-            <Route path="/about-us" element={<AboutUs />} />
-            <Route path="/contact-us" element={<ContactUs />} />
-            <Route path="/movies" element={<MoviesPage />} />
-            <Route path="/movies/:search" element={<MoviesPage />} />
-            <Route path="/movie/:id" element={<SingleMovie />} />
-            <Route path="/watch/:id" element={<WatchPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="*" element={<NotFound />} />
+          {/***********PUBLIC ROUTERS***************/}
+          <Route path="/" element={<HomeScreen />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/movies" element={<MoviesPage />} />
+          <Route path="/movies/:search" element={<MoviesPage />} />
+          <Route path="/movie/:id" element={<SingleMovie />} />
+          <Route path="/watch/:id" element={<WatchPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="*" element={<NotFound />} />
 
-            {/***********PRIVATE PUBLIC ROUTERS***************/}
-            <Route element={<ProtectedRouter/>}>
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/password" element={<Password />} />
-              <Route path="/favorites" element={<FavoritesMovies />} />
-              {/***********ADMIN ROUTERS***************/}
-              <Route element={<AdminProtectedRouter />} >
-                <Route path="/movieslist" element={<MoviesList />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/categories" element={<Categories />} />
-                <Route path="/users" element={<Users />} />
-                <Route path="/addmovie" element={<AddMovie />} />
-              </Route>
+          {/***********PRIVATE PUBLIC ROUTERS***************/}
+          <Route element={<ProtectedRouter />}>
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/password" element={<Password />} />
+            <Route path="/favorites" element={<FavoritesMovies />} />
+            {/***********ADMIN ROUTERS***************/}
+            <Route element={<AdminProtectedRouter />} >
+              <Route path="/movieslist" element={<MoviesList />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/addmovie" element={<AddMovie />} />
             </Route>
+          </Route>
         </Routes>
       </ScrollOnTop>
     </>
