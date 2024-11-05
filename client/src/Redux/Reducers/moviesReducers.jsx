@@ -133,7 +133,7 @@ export const CastsReducer = (state = { casts: [] }, action) => {
         case moviesConstants.ADD_CAST:
             return {casts: [...state.casts, action.payload] };
         case moviesConstants.EDIT_CAST:
-            const updatedCasts = state.casts.filter((cast) => 
+            const updatedCasts = state.casts.map((cast) => 
                 cast.id === action.payload.id ? action.payload : cast 
             );
             return { casts : updatedCasts };
