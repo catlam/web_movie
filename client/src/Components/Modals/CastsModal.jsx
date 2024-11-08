@@ -8,9 +8,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { addCastAction, updateCastAction } from '../../Redux/Actions/MoviesActions';
 import toast from 'react-hot-toast';
-// import { ImagepreviewCast } from '../ImagePreviewCast';
+import { ImagepreviewCast } from '../ImagePreviewCast';
 import { InlineError } from '../Notifications/Error';
-import { Imagepreview } from '../ImagePreview';
+// import { Imagepreview } from '../ImagePreview';
 
 function CastModal({ modalOpen, setModalOpen, cast }) {
     const dispatch = useDispatch();
@@ -90,7 +90,7 @@ function CastModal({ modalOpen, setModalOpen, cast }) {
                             Cast Image
                         </p>
                         <Uploder setImageUrl={setCastImage} />
-                        <Imagepreview
+                        <ImagepreviewCast
                             image={image ? image : "/images/user.png"}
                             name="castImage"
                         />
