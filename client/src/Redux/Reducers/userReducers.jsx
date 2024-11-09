@@ -118,6 +118,23 @@ export const userDeleteFavoriteMovieReducer = (state = {}, action) => {
     }
 };
 
+// DELETE FAVORITE MOVIE BY ID
+export const userDeleteFavoriteMovieByIdReducer = (state = {}, action) => {
+    switch (action.type) {
+        case userConstants.DELETE_FAVORITE_MOVIE_REQUEST:
+            return { isLoading: true };
+        case userConstants.DELETE_FAVORITE_MOVIE_SUCCESS:
+            return { isLoading: false, isSuccess: true };
+        case userConstants.DELETE_FAVORITE_MOVIE_FAIL:
+            return { isLoading: false, isError: action.payload };
+        case userConstants.DELETE_FAVORITE_MOVIE_RESET:
+            return {};
+        default:
+            return state;
+    }
+};
+
+
 // ADMIN GET ALL USERS
 export const adminGetAllUsersReducer = (state = { users: [] }, action) => {
     switch (action.type) {

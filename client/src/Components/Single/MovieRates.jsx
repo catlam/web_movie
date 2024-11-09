@@ -11,7 +11,7 @@ import { ReviewValidation } from '../Validation/MovieValidation';
 import { toast } from 'react-hot-toast'
 import { InlineError } from '../Notifications/Error';
 import { Link } from 'react-router-dom';
-import { reviewMovieAction } from '../../Redux/Actions/MoviesActions';
+import { deleteReviewMovieAction, reviewMovieAction } from '../../Redux/Actions/MoviesActions';
 
 
 
@@ -46,6 +46,7 @@ const Ratings = [
 function MovieRates({ movie }) {
   const dispatch = useDispatch();
 
+
   // use Selector
   const { isLoading, isError } = useSelector(
     (state) => state.createReview);
@@ -69,6 +70,12 @@ function MovieRates({ movie }) {
       review: { ...data }
     }));
   }
+
+  const handleDeleteReview = () => {
+    if (window.confirm("Are you sure you want to delete this review?")) {
+      dispatch(deleteReviewMovieAction(movie._id)); 
+    }
+  };
 
   useEffect(() => {
     if (isError) {
@@ -151,6 +158,7 @@ function MovieRates({ movie }) {
             {
               movie?.reviews?.length > 0 ? movie?.reviews?.map((review) => (
                 <div key={review?._id} className="md:grid flex flex-col w-full grid-cols-12 gap-6 bg-dry p-4 border border-gray-800 rounded-lg">
+                  
                   <div className="col-span-2 bg-main hidden md:block">
                     <img
                       src={review?.userImage ? review.userImage : "/images/user.png"}
@@ -158,6 +166,7 @@ function MovieRates({ movie }) {
                       className="w-full h-18 rounded-lg object-cover"
                     />
                   </div>
+                  
                   <div className="col-span-7 flex flex-col gap-2">
                     <h2>{review?.userName}</h2>
                     <p className="text-xs leading-6 font-medium text-text">
@@ -167,6 +176,18 @@ function MovieRates({ movie }) {
                   {/* rates */}
                   <div className="col-span-3 flex-rows border-l border-border text-xs gap-1 text-star">
                     <Rating value={review?.rating} />
+                  </div>
+
+                  <div className="col-span-12 text-right ">
+                    {/* Check if the logged-in user is the one who wrote the review */}
+                    {userInfo && review?.userId.toString() === userInfo._id.toString() && (
+                      <button
+                        onClick={() => handleDeleteReview(movie._id)}
+                        className="text-red-500"
+                      >
+                        Delete
+                      </button>
+                    )}
                   </div>
                 </div>
               )) : <Empty message={`Be first to rate "${movie?.name}"`} />

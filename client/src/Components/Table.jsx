@@ -8,6 +8,7 @@ import {GoEye} from 'react-icons/go';
 const Head = "text-xs text-left text-main font-semibold px-6 py-2 uppercase"
 const Text = "text-sm text-left leading-6 whitespace-nowrap px-6 py-3"
 
+
 // rows
 const Rows = (movie, i, onDeleteHandler, admin) => {
     return (
@@ -25,7 +26,7 @@ const Rows = (movie, i, onDeleteHandler, admin) => {
             <td className={`${Text}`}>{movie?.category}</td>
             <td className={`${Text}`}>{movie.language}</td>
             <td className={`${Text}`}>{movie.year}</td>
-            <td className={`${Text}`}>{movie.time}hr</td>
+            {/* <td className={`${Text}`}>{movie.time}hr</td> */}
             <td className={`${Text} float-right flex-rows gap-2`}>
                 {
                     admin ? (
@@ -43,11 +44,13 @@ const Rows = (movie, i, onDeleteHandler, admin) => {
                         </>
                     ) : (
                         <>
-                            <button className="border border-order bg-dry flex-rows gap-2 text-border rounded py-1 px-2">
-                                Download <FaCloudDownloadAlt className="text-green-500" />
+                            <button 
+                                onClick={() => onDeleteHandler(movie?._id)}
+                                className="border border-order bg-dry flex-rows gap-2 text-border rounded py-1 px-2">
+                                Delete <FaCloudDownloadAlt className="text-green-500" />
                             </button>
                             <Link 
-                                to={`/movie/${movie?.name}`} 
+                                to={`/movie/${movie?._id}`} 
                                 className="bg-subMain text-white rounded flex-colo w-6 h-6"
                             >
                                 <GoEye />
@@ -84,9 +87,9 @@ function Table({ data, admin, onDeleteHandler }) {
                     <th scope="col" className={`${Head}`}>
                         Year
                     </th>
-                    <th scope="col" className={`${Head}`}>
+                    {/* <th scope="col" className={`${Head}`}>
                         Hour
-                    </th>
+                    </th> */}
                     <th scope="col" className={`${Head} text-end`}>
                         Actions
                     </th>

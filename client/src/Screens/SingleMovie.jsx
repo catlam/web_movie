@@ -70,7 +70,7 @@ function SingleMovie() {
                                 <Titles title="Related Movies" Icon={BsCollectionFill} />
                                 <div className="grid sm:mt-10 mt-6 xl:grid-cols-4 2xl:grid-cols-5 lg:grid-cols-3 sm:grid-cols-2 gap-6">
                                     {RelatedMovies?.map((movie) => (
-                                        <Movie key={movie?._id} movie={movie} /> // Truyền phim vào component Movie
+                                        <Movie key={movie?._id} movie={movie} /> 
                                     ))}
                                 </div>
                             </div>

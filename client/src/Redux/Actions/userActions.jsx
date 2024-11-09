@@ -99,6 +99,19 @@ const deleteAllFavoriteMoviesAction = () => async (dispatch, getState) => {
     }
 }
 
+// delete favorite movie by id action
+const deleteFavoriteMovieByIdAction = (movieId) => async (dispatch, getState) => {
+    try {
+        dispatch({ type: userConstants.DELETE_FAVORITE_MOVIE_REQUEST});
+        await userApi.deleteFavoriteMovieService(movieId, tokenProtection(getState));
+        dispatch({ type: userConstants.DELETE_FAVORITE_MOVIE_SUCCESS});
+        toast.success("Favorite Movie Deleted")
+        dispatch(getFavoriteMoviesAction());
+    } catch (error) {
+        ErrorsAction(error, dispatch, userConstants.DELETE_FAVORITE_MOVIE_FAIL);
+    }
+}
+
 // admin get all users
 const getAllUsersAction = () => async (dispatch, getState) => {
     try {
@@ -150,4 +163,5 @@ export {
     getAllUsersAction,
     deleteUserAction,
     likeMovieAction,
+    deleteFavoriteMovieByIdAction,
  };

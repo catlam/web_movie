@@ -96,6 +96,25 @@ export const reviewMovieAction = ({ id, review }) => async (dispatch, getState) 
     }
 }
 
+// delete review movie action
+export const deleteReviewMovieAction = (id) => async (dispatch, getState) => {
+    try {
+        dispatch({ type: moviesConstants.DELETE_REVIEW_REQUEST })
+        const response = await moviesAPIs.deleteReviewMovieService(
+            tokenProtection(getState),
+            id
+        );
+        dispatch({
+            type: moviesConstants.DELETE_REVIEW_SUCCESS,
+            payload: response
+        })
+        toast.success("Review deleted successfully!");
+        dispatch(getMovieByIdAction(id));
+    } catch (error) {
+        ErrorsAction(error, dispatch, moviesConstants.DELETE_REVIEW_FAIL);
+    }
+}
+
 // delete movie action
 export const deleteMovieAction = (id) => async (dispatch, getState) => {
     try {

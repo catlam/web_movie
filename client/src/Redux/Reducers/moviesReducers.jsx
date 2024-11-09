@@ -64,7 +64,6 @@ export const movieTopRatedReducer = (state = { movies: [] }, action) => {
     }
 };
 
-
 // CREATE REVIEW
 export const createReviewReducer = (state = {}, action) => {
     switch (action.type) {
@@ -76,6 +75,21 @@ export const createReviewReducer = (state = {}, action) => {
             return { isLoading: false, isError: action.payload };
         case moviesConstants.CREATE_REVIEW_RESET:
             return {};
+        default:
+            return state;
+
+    }
+};
+
+// DELETE REVIEW
+ export const deleteReviewReducer = (state = {}, action) => {
+    switch (action.type) {
+        case moviesConstants.DELETE_REVIEW_REQUEST:
+            return { isLoading: true };
+        case moviesConstants.DELETE_REVIEW_SUCCESS:
+            return { isLoading: false, isSuccess: true }
+        case moviesConstants.DELETE_REVIEW_FAIL:
+            return { isLoading: false, isError: action.payload };
         default:
             return state;
 

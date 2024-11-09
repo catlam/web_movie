@@ -85,6 +85,16 @@ const deleteFavoriteMoviesService = async (token) => {
     return data;
 }
 
+// delete favorite movie
+const deleteFavoriteMovieService = async (movieId, token) => {
+    const { data } = await Axios.delete(`/users/favorites/${movieId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        }
+    })
+    return data;
+}
+
 // like movie API call
 const likeMovieService = async (movieId, token) => {
     const { data } = await Axios.post(`/users/favorites`, movieId, {
@@ -131,6 +141,8 @@ export {
     getAllUsersService,
     deleteUserService,
     likeMovieService,
+
+    deleteFavoriteMovieService,
  };
 
 

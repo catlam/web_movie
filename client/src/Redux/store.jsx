@@ -15,6 +15,8 @@ const rootReducer = combineReducers({
     adminGetAllUsers: User.adminGetAllUsersReducer,
     adminDeleteUser: User.adminDeleteUserReducer,
     userLikeMovie: User.userLikeMovieReducer,
+    userDeleteMovieById: User.userDeleteFavoriteMovieByIdReducer,
+
 
     // Category reducers
     categoryGetAll: categories.getAllCategoriesReducer,
@@ -33,6 +35,7 @@ const rootReducer = combineReducers({
     createMovie : movies.createMovieReducer,
     casts: movies.CastsReducer,
     updateMovie: movies.updateMovieReducer,
+    deleteReview: movies.deleteReviewReducer,
 })
 
 // get userInfo form localStorage
