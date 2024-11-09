@@ -247,6 +247,37 @@ const deleteLikedMovies = asyncHandler(async (req, res) => {
     }
 })
 
+// @desc Delete liked movies by id
+// @route DELETE api/users/favorites/:id
+// @access Private
+
+const deleteLikedMovieById = asyncHandler(async (req, res) => {
+    try {
+        //find user in DB
+        const user = await User.findById(req.user._id);
+        // if user exists delete liked movie by id and save it in DB
+        if (user) {
+            // check if movie already exists
+            // if movie not liked send error message
+            if (!user.likedMovies.includes(req.params.id)) {
+                res.status(400);
+                throw new Error("Movie not liked");
+            }
+            // else delete movie from likedMovies and save it in DB
+            user.likedMovies = user.likedMovies.filter(movieId => movieId.toString()!== req.params.id);
+            await user.save();
+            res.json({ messaging: "Movie removed from liked list successfully" });
+        }
+        // else send error message
+        else {
+            res.status(404);
+            throw new Error("User not found");
+        }
+    } catch (error) {
+        
+    }
+})
+
 // **************ADMIN CONTROLLERS******************
 // @desc Get all users
 // @route GET /api/users
@@ -300,4 +331,5 @@ export {
     deleteLikedMovies,
     getUsers,
     deleteUser,
+    deleteLikedMovieById,
 };

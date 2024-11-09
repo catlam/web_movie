@@ -163,6 +163,63 @@ const createMovieReview = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc delete movie review
+// @route POST /api/movies/:id/reviews
+// @access Private
+const deleteMovieReview = asyncHandler(async (req, res) => {
+  try {
+    // Find the movie by ID in the database
+    const movie = await Movie.findById(req.params.id);
+
+    if (!movie) {
+      res.status(404);
+      throw new Error("Movie not found");
+    }
+
+    // Check if the user has already reviewed this movie
+    const alreadyReviewed = movie.reviews.find(
+      (r) => r.userId.toString() === req.user._id.toString()
+    );
+
+    // If the user hasn't reviewed the movie, return a 404 error
+    if (!alreadyReviewed) {
+      res.status(404);
+      throw new Error("You haven't reviewed this movie");
+    }
+
+    // Find and remove the user's review
+    const index = movie.reviews.findIndex(
+      (r) => r.userId.toString() === req.user._id.toString()
+    );
+    movie.reviews.splice(index, 1);
+
+    // Update the number of reviews
+    movie.numberOfReviews = movie.reviews.length;
+
+    // Recalculate the average rating
+    if (movie.reviews.length === 0) {
+      movie.rate = 0; // If there are no reviews, set the average rating to 0
+    } else {
+      movie.rate = movie.reviews.reduce((acc, item) => item.rating + acc, 0) / movie.reviews.length;
+    }
+
+    // Save the updated movie in the database
+    await movie.save();
+
+    // Return a success message
+    res.json({
+      message: "Review deleted successfully"
+    });
+
+  } catch (error) {
+    // Return an error if something went wrong
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+
+
 
 // ************ADMIN CONTROLLERS******************
 
@@ -316,4 +373,5 @@ export {
   deleteMovie,
   deleteAllMovies,
   createMovie,
+  deleteMovieReview,
 };
