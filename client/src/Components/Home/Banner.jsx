@@ -66,9 +66,9 @@ const Swipper = ({sameClass, movies}) => {
 }
 
 function Banner({movies, isLoading}) {
-    const sameClass = "w-full flex-colo xl:h-96 bg-dry lg:h-64 h-48"
+    const sameClass = "w-full flex-colo xl:h-[500px] lg:h-[400px] h-[300px]"
     return (
-        <div className="relative w-full">
+        <div className="relative w-full ">
             {isLoading ? (
                 <div className={sameClass}>
                     <Loader />

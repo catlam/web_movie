@@ -155,45 +155,41 @@ function MovieRates({ movie }) {
         <div className="col-span-3 flex w-full flex-col gap-6">
           <h3 className="text-xl text-text font-semibold">Reviews ({movie?.numberOfReviews})</h3>
           <div className="w-full flex flex-col bg-main gap-6 rounded-lg md:p-12 p-6 h-header overflow-y-scroll">
-            {
-              movie?.reviews?.length > 0 ? movie?.reviews?.map((review) => (
-                <div key={review?._id} className="md:grid flex flex-col w-full grid-cols-12 gap-6 bg-dry p-4 border border-gray-800 rounded-lg">
-                  
-                  <div className="col-span-2 bg-main hidden md:block">
-                    <img
-                      src={review?.userImage ? review.userImage : "/images/user.png"}
-                      alt={review?.userName}
-                      className="w-full h-18 rounded-lg object-cover"
-                    />
-                  </div>
-                  
-                  <div className="col-span-7 flex flex-col gap-2">
-                    <h2>{review?.userName}</h2>
-                    <p className="text-xs leading-6 font-medium text-text">
-                      {review?.comment}
-                    </p>
-                  </div>
-                  {/* rates */}
-                  <div className="col-span-3 flex-rows border-l border-border text-xs gap-1 text-star">
-                    <Rating value={review?.rating} />
+            {movie?.reviews?.length > 0 ? (
+              movie?.reviews?.map((review) => (
+                <div key={review?._id} className="w-full bg-dry p-6 border border-gray-800 rounded-lg relative">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-main rounded-full overflow-hidden">
+                      <img
+                        src={review?.userImage ? review.userImage : "/images/user.png"}
+                        alt={review?.userName}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-semibold">{review?.userName}</h2>
+                      <div className="flex mt-2 gap-2 text-star text-sm">
+                        <Rating value={review?.rating} />
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="col-span-12 text-right ">
-                    {/* Check if the logged-in user is the one who wrote the review */}
-                    {userInfo && review?.userId.toString() === userInfo._id.toString() && (
-                      <button
-                        onClick={() => handleDeleteReview(movie._id)}
-                        className="text-red-500"
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </div>
+                  <p className="text-sm text-text mt-4">{review?.comment}</p>
+
+                  {/* Delete button */}
+                  {userInfo && review?.userId.toString() === userInfo._id.toString() && (
+                    <button
+                      onClick={() => handleDeleteReview(review._id)}
+                      className="absolute top-4 right-4 text-red-500 hover:text-red-700"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
-              )) : <Empty message={`Be first to rate "${movie?.name}"`} />
-
-            }
-
+              ))
+            ) : (
+              <Empty message={`Be first to rate "${movie?.name}"`} />
+            )}
           </div>
         </div>
       </div>
