@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../Layout/Layout';
 import { Link, useParams } from 'react-router-dom';
-import { Movies } from '../Data/MovieData';
 import { BiArrowBack } from 'react-icons/bi';
 import { FaCloudDownloadAlt, FaHeart, FaPlay } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { getMovieByIdAction } from '../Redux/Actions/MoviesActions';
 import Loader from '../Components/Notifications/Loader';
-import { Empty } from '../Components/Notifications/empty';
 import { RiMovie2Line } from 'react-icons/ri';
 import { IfMovieLiked, LikeMovie } from '../Context/Functionalities';
 
@@ -99,7 +97,7 @@ function WatchPage() {
                                 <img
                                     src={
                                         movie?.image
-                                            ? `/images/movies/${movie?.titleImage}`
+                                            ? `${movie?.titleImage}`
                                             : "images/user.png"
                                     }
                                     alt={movie?.name}

@@ -1,6 +1,6 @@
 import React from 'react';
 import {BsFillGridFill} from 'react-icons/bs';
-import {FaHeart, FaListAlt, FaUser} from 'react-icons/fa';
+import {FaHeart, FaListAlt, FaRegCreditCard, FaUser} from 'react-icons/fa';
 import { RiMovie2Fill, RiLockPasswordLine, RiLogoutCircleLine } from 'react-icons/ri';
 import {HiViewGridAdd} from 'react-icons/hi';
 import { FiSettings } from 'react-icons/fi';
@@ -82,7 +82,13 @@ function SideBar({children}) {
             name: "Change Password",
             link: "/password",
             icon: RiLockPasswordLine
-        },    
+        }, 
+        {
+            name: "Registration",
+            link: "/registration",
+            icon: FaRegCreditCard
+        },
+
     ]
     : [];
     

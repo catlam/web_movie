@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaCloudDownloadAlt, FaEdit } from 'react-icons/fa';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import { MdDelete } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import {GoEye} from 'react-icons/go';
@@ -47,7 +47,7 @@ const Rows = (movie, i, onDeleteHandler, admin) => {
                             <button 
                                 onClick={() => onDeleteHandler(movie?._id)}
                                 className="border border-order bg-dry flex-rows gap-2 text-border rounded py-1 px-2">
-                                Delete <FaCloudDownloadAlt className="text-green-500" />
+                                    Delete <FaTrashAlt className="text-green-500" />
                             </button>
                             <Link 
                                 to={`/movie/${movie?._id}`} 

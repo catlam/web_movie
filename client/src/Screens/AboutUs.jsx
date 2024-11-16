@@ -15,23 +15,18 @@ function AboutUs() {
                 </h3>
                 <div className="mt-3 text-sm leading-8 text-text">
                   <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-                    Sint, illum ducimus quis excepturi esse mollitia. 
-                    Unde, perspiciatis officiis. Saepe praesentium quibusdam 
-                    explicabo, natus beatae nam rerum! Repudiandae pariatur 
-                    ipsa aut!
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Sint, illum ducimus quis excepturi esse mollitia.
-                    Unde, perspiciatis officiis. Saepe praesentium quibusdam
-                    explicabo, natus beatae nam rerum! Repudiandae pariatur
-                    ipsa aut!
+                  Welcome to Cineva – your ultimate destination for an exceptional 
+                  movie-watching experience. We are an online movie streaming platform 
+                  dedicated to bringing you a diverse and high-quality collection of films. 
+                  From the latest blockbusters to timeless classics, Cineva is committed 
+                  to providing a rich library of content that is easily accessible, catering 
+                  to all your entertainment needs.
                   </p>
                   <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Sint, illum ducimus quis excepturi esse mollitia.
-                    Unde, perspiciatis officiis. Saepe praesentium quibusdam
-                    explicabo, natus beatae nam rerum! Repudiandae pariatur
-                    ipsa aut!
+                  Our mission is to create the perfect online space where you 
+                  can unwind and enjoy your favorite movies anytime, anywhere. We understand 
+                  that everyone has unique tastes, which is why we continually update and expand our 
+                  movie library to ensure that we meet the needs of all movie lovers.
                   </p>
                 </div>
                 <div className="grid md:grid-cols-2 gap-6 mt-8">
