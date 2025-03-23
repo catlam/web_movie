@@ -27,7 +27,6 @@ import { getAllMoviesAction } from './Redux/Actions/MoviesActions';
 import { getFavoriteMoviesAction } from './Redux/Actions/userActions';
 import toast from 'react-hot-toast';
 import EditMovie from './Screens/Dashboard/Admin/EditMovie';
-import PlanSelect from './Screens/Dashboard/PlanPage';
 
 
 function App() {
@@ -75,8 +74,6 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/password" element={<Password />} />
             <Route path="/favorites" element={<FavoritesMovies />} />
-            <Route path="/registration" element={<PlanSelect />} />
-
             {/***********ADMIN ROUTERS***************/}
             <Route element={<AdminProtectedRouter />} >
               <Route path="/movieslist" element={<MoviesList />} />

@@ -82,7 +82,7 @@ function Profile() {
 
         <div className="w-full">
           <Input
-            label="FullName"
+            label="Full Name"
             placeholder="Cineva"
             type="text"
             name="fullName"

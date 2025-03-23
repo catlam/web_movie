@@ -64,7 +64,7 @@ function Register() {
                     />
                     <div className="w-full">
                         <Input
-                            label="FullName"
+                            label="Full Name"
                             placeholder="Jennie Kim"
                             type="text"
                             name="fullName"
