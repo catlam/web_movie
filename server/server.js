@@ -7,6 +7,7 @@ import userRouter from "./Routes/UserRouter.js";
 import moviesRouter from "./Routes/MoviesRouter.js";
 import categoriesRouter from "./Routes/CategoriesRouter.js";
 import Uploadrouter from './Controllers/UploadFile.js';
+import watchRouter from './Routes/WatchRouter.js';
 
 dotenv.config();
 import path from "path";
@@ -30,6 +31,7 @@ app.use("/api/users", userRouter);
 app.use("/api/movies", moviesRouter);
 app.use("/api/categories", categoriesRouter);
 app.use("/api/upload", Uploadrouter);
+app.use("/api/watch", watchRouter);
 
 // error handling middleware
 app.use(errorHandler);

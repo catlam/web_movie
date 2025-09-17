@@ -7,19 +7,20 @@ import PopularMovies from '../Components/Home/PopularMovies';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllMoviesAction, getRandomMoviesAction, getTopRatedMovieAction } from '../Redux/Actions/MoviesActions';
 import toast from 'react-hot-toast';
+import ViewHistory from '../Components/Home/ViewHistory';
 
 
 function HomeScreen() {
   const dispatch = useDispatch();
   // useSelectors
-  const { isLoading:randomLoading, isError:randomError, movies:randomMovies } = useSelector(
+  const { isLoading: randomLoading, isError: randomError, movies: randomMovies } = useSelector(
     (state) => state.getRandomMovies);
-  const { isLoading:topLoading, isError:topError, movies:topMovies } = useSelector(
+  const { isLoading: topLoading, isError: topError, movies: topMovies } = useSelector(
     (state) => state.getTopRatedMovie);
   const { isLoading, isError, movies } = useSelector(
     (state) => state.getAllMovies
   );
-     
+
   // useEffect
   useEffect(() => {
     // get random movies
@@ -29,7 +30,7 @@ function HomeScreen() {
     // get top rated movies
     dispatch(getTopRatedMovieAction());
     // errors
-    if(isError || randomError || topError){
+    if (isError || randomError || topError) {
       toast.error("Something went wrong!")
     }
   }, [dispatch, isError, randomError, topError]);
@@ -38,7 +39,8 @@ function HomeScreen() {
   return (
     <Layout>
       <div className="container mx-auto min-h-screen px-2 mb-6">
-        <Banner movies={movies} isLoading={isLoading}/>
+        <Banner movies={movies} isLoading={isLoading} />
+        <ViewHistory movies={movies} isLoading={isLoading} />
         <PopularMovies movies={randomMovies} isLoading={randomLoading} />
         <Promos />
         <TopRated movies={topMovies} isLoading={topLoading} />

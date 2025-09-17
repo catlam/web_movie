@@ -2,6 +2,7 @@ import {combineReducers,configureStore} from '@reduxjs/toolkit';
 import * as User from './Reducers/userReducers';
 import * as categories from './Reducers/categoriesReducers'
 import * as movies from "./Reducers/moviesReducers"; 
+import { continueWatchingReducer } from './Reducers/watchReducers';
 
 const rootReducer = combineReducers({
     // user reducers
@@ -36,6 +37,9 @@ const rootReducer = combineReducers({
     casts: movies.CastsReducer,
     updateMovie: movies.updateMovieReducer,
     deleteReview: movies.deleteReviewReducer,
+
+    // watch history
+    continueWatching: continueWatchingReducer,
 })
 
 // get userInfo form localStorage
