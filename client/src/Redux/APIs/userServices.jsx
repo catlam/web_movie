@@ -65,6 +65,12 @@ const changePasswordService = async (passwords, token) => {
     return data;
 }
 
+// forgot password API call
+const forgotPasswordService = async ({ email, newPassword }) => {
+    const { data } = await Axios.post("/users/reset-password", { email, newPassword });
+    return data;
+};
+
 // get all favorite movies
 const getFavoriteMoviesService = async (token) => {
     const { data } = await Axios.get("/users/favorites", {
@@ -143,6 +149,7 @@ export {
     likeMovieService,
 
     deleteFavoriteMovieService,
+    forgotPasswordService,
  };
 
 

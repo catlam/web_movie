@@ -4,11 +4,11 @@ import * as userConstants from '../Constants/userConstant';
 export const userLoginReducer = (state = {}, action) => {
     switch (action.type) {
         case userConstants.USER_LOGIN_REQUEST:
-            return {isloading: true};
+            return { isloading: true };
         case userConstants.USER_LOGIN_SUCCESS:
-            return {isloading: false, userInfo: action.payload, isSuccess: true};
+            return { isloading: false, userInfo: action.payload, isSuccess: true };
         case userConstants.USER_LOGIN_FAIL:
-            return {isloading: false,isError: action.payload};    
+            return { isloading: false, isError: action.payload };
         case userConstants.USER_LOGIN_RESET:
             return {};
         case userConstants.USER_LOGOUT:
@@ -22,27 +22,27 @@ export const userLoginReducer = (state = {}, action) => {
 export const userRegisterReducer = (state = {}, action) => {
     switch (action.type) {
         case userConstants.USER_REGISTER_REQUEST:
-            return {isloading: true};
+            return { isloading: true };
         case userConstants.USER_REGISTER_SUCCESS:
-            return {isloading: false, userInfo: action.payload, isSuccess: true};
+            return { isloading: false, userInfo: action.payload, isSuccess: true };
         case userConstants.USER_REGISTER_FAIL:
-            return {isloading: false, isError: action.payload};
+            return { isloading: false, isError: action.payload };
         case userConstants.USER_REGISTER_RESET:
             return {};
         default:
             return state;
     }
-} 
+}
 
 // UPDATE PROFILE
 export const userUpdateProfileReducer = (state = {}, action) => {
     switch (action.type) {
         case userConstants.USER_UPDATE_PROFILE_REQUEST:
-            return {isLoading: true};
+            return { isLoading: true };
         case userConstants.USER_UPDATE_PROFILE_SUCCESS:
-            return { isLoading: false, userInfo: action.payload, isSuccess: true};
+            return { isLoading: false, userInfo: action.payload, isSuccess: true };
         case userConstants.USER_UPDATE_PROFILE_FAIL:
-            return { isLoading: false, isError: action.payload};
+            return { isLoading: false, isError: action.payload };
         case userConstants.USER_UPDATE_PROFILE_RESET:
             return {};
         default:
@@ -54,11 +54,11 @@ export const userUpdateProfileReducer = (state = {}, action) => {
 export const userDeleteProfileReducer = (state = {}, action) => {
     switch (action.type) {
         case userConstants.USER_DELETE_PROFILE_REQUEST:
-            return {isLoading: true};
+            return { isLoading: true };
         case userConstants.USER_DELETE_PROFILE_SUCCESS:
-            return {isLoading: false, isSuccess: true};
+            return { isLoading: false, isSuccess: true };
         case userConstants.USER_DELETE_PROFILE_FAIL:
-            return {isLoading: false, isError: action.payload};
+            return { isLoading: false, isError: action.payload };
         case userConstants.USER_DELETE_PROFILE_RESET:
             return {};
         default:
@@ -70,21 +70,36 @@ export const userDeleteProfileReducer = (state = {}, action) => {
 export const userChangePasswordReducer = (state = {}, action) => {
     switch (action.type) {
         case userConstants.USER_CHANGE_PASSWORD_REQUEST:
-            return {isLoading: true};
+            return { isLoading: true };
         case userConstants.USER_CHANGE_PASSWORD_SUCCESS:
             return {
-                isLoading: false, 
+                isLoading: false,
                 isSuccess: true,
                 message: action.payload.message,
             };
         case userConstants.USER_CHANGE_PASSWORD_FAIL:
-            return {isLoading: false, isError: action.payload};
+            return { isLoading: false, isError: action.payload };
         case userConstants.USER_CHANGE_PASSWORD_RESET:
             return {};
         default:
             return state;
     }
 }
+
+export const userForgotPasswordReducer = (state = {}, action) => {
+    switch (action.type) {
+        case userConstants.USER_FORGOT_PASSWORD_REQUEST:
+            return { loading: true, success: false };
+        case userConstants.USER_FORGOT_PASSWORD_SUCCESS:
+            return { loading: false, success: true, message: action.payload?.message || "Password reset successful" };
+        case userConstants.USER_FORGOT_PASSWORD_FAIL:
+            return { loading: false, success: false, error: action.payload || "Something went wrong" };
+        case userConstants.USER_FORGOT_PASSWORD_RESET:
+            return {};
+        default:
+            return state;
+    }
+};
 
 // GET FAVORITE MOVIES
 export const userGetFavoriteMoviesReducer = (state = { likedMovies: [], }, action) => {
@@ -151,7 +166,7 @@ export const adminGetAllUsersReducer = (state = { users: [] }, action) => {
         default:
             return state;
     }
-}; 
+};
 
 // ADMIN DELETE USER
 export const adminDeleteUserReducer = (state = {}, action) => {
@@ -170,7 +185,7 @@ export const adminDeleteUserReducer = (state = {}, action) => {
 };
 
 // USER LIKE MOVIE
-export const userLikeMovieReducer = (state = {}, action) => { 
+export const userLikeMovieReducer = (state = {}, action) => {
     switch (action.type) {
         case userConstants.LIKE_MOVIE_REQUEST:
             return { isLoading: true };

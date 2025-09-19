@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
-import { upsertWatchService } from "../Redux/APIs/watchAPI";
+import { upsertWatchService } from "../Redux/APIs/watchService";
 
 export default function useWatchReporter({ movieId, videoRef, pingInterval = 10 }) {
     const sentStartRef = useRef(false);

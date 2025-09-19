@@ -26,8 +26,10 @@ export const getPlaybackStateService = async (params) => {
 };
 
 // Xoá 1 mục
-export const deleteOnePlaybackService = async (movieId) => {
-    const { data } = await Axios.delete(`/watch/me/${movieId}`);
+export const deleteOnePlaybackService = async (token, movieId) => {
+    const { data } = await Axios.delete(`/watch/me/${movieId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
     return data;
 };
 

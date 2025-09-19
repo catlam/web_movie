@@ -2,7 +2,7 @@ import {combineReducers,configureStore} from '@reduxjs/toolkit';
 import * as User from './Reducers/userReducers';
 import * as categories from './Reducers/categoriesReducers'
 import * as movies from "./Reducers/moviesReducers"; 
-import { continueWatchingReducer } from './Reducers/watchReducers';
+import * as histories from './Reducers/watchReducers';
 
 const rootReducer = combineReducers({
     // user reducers
@@ -17,6 +17,7 @@ const rootReducer = combineReducers({
     adminDeleteUser: User.adminDeleteUserReducer,
     userLikeMovie: User.userLikeMovieReducer,
     userDeleteMovieById: User.userDeleteFavoriteMovieByIdReducer,
+    userForgotPassword: User.userForgotPasswordReducer,
 
 
     // Category reducers
@@ -39,7 +40,9 @@ const rootReducer = combineReducers({
     deleteReview: movies.deleteReviewReducer,
 
     // watch history
-    continueWatching: continueWatchingReducer,
+    continueWatching: histories.continueWatchingReducer,
+    watchDeleteOne: histories.watchDeleteOneReducer,
+    watchClearAll: histories.watchClearAllReducer,
 })
 
 // get userInfo form localStorage

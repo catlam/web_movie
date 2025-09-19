@@ -172,6 +172,33 @@ const changeUserPassword = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc Reset password trực tiếp bằng email + mật khẩu mới (KHÔNG email/OTP) - DEV ONLY
+// @route POST /api/users/reset-password
+// @access Public
+const resetPasswordDirect = asyncHandler(async (req, res) => {
+    const { email, newPassword } = req.body || {};
+
+    if (!email || !newPassword) {
+        res.status(400);
+        throw new Error("Email and new password are required");
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+        res.status(404);
+        throw new Error("User not found");
+    }
+
+    // hash mật khẩu mới
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.json({ message: "Password reset successful" });
+});
+
 // @desc Get all liked movies
 // @route GET /api/users/favorites
 // @access Private
@@ -332,4 +359,5 @@ export {
     getUsers,
     deleteUser,
     deleteLikedMovieById,
+    resetPasswordDirect,
 };

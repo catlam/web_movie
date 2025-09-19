@@ -8,7 +8,7 @@ import { getMovieByIdAction } from '../Redux/Actions/MoviesActions';
 import Loader from '../Components/Notifications/Loader';
 import { RiMovie2Line } from 'react-icons/ri';
 import { IfMovieLiked, LikeMovie } from '../Context/Functionalities';
-import { getPlaybackStateService } from '../Redux/APIs/watchAPI';
+import { getPlaybackStateService } from '../Redux/APIs/watchService';
 import useWatchReporter from '../Hooks/useWatchReporter';
 
 function WatchPage() {

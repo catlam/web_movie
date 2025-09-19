@@ -1,9 +1,9 @@
 import express from 'express';
-import { 
-    loginUser, 
-    registerUser, 
-    updateUserProfile, 
-    deleteUserProfile, 
+import {
+    loginUser,
+    registerUser,
+    updateUserProfile,
+    deleteUserProfile,
     changeUserPassword,
     getLikedMovies,
     addLikedMovie,
@@ -11,6 +11,7 @@ import {
     getUsers,
     deleteUser,
     deleteLikedMovieById,
+    resetPasswordDirect,
 } from '../Controllers/UserController.js';
 import { protect, admin } from '../middlewares/Auth.js';
 
@@ -19,6 +20,8 @@ const router = express.Router();
 // *********PUBLIC ROUTES******************
 router.post("/", registerUser);
 router.post('/login', loginUser);
+router.post("/reset-password", resetPasswordDirect)
+
 
 //*********PRIVATE ROUTES****************
 router.put("/", protect, updateUserProfile);
