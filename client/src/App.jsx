@@ -27,6 +27,7 @@ import { getAllMoviesAction } from './Redux/Actions/MoviesActions';
 import { getFavoriteMoviesAction } from './Redux/Actions/userActions';
 import toast from 'react-hot-toast';
 import EditMovie from './Screens/Dashboard/Admin/EditMovie';
+import SingleSeries from './Screens/SingleSeries';
 
 
 function App() {
@@ -64,6 +65,7 @@ function App() {
           <Route path="/movies" element={<MoviesPage />} />
           <Route path="/movies/:search" element={<MoviesPage />} />
           <Route path="/movie/:id" element={<SingleMovie />} />
+          <Route path="/series/:id" element={<SingleSeries />} />
           <Route path="/watch/:id" element={<WatchPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

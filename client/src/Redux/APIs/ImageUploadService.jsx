@@ -4,7 +4,10 @@ import Axios from './Axios';
 const uploadImageservice = async (file, setLoading) => {
     try {
         setLoading(true);
-        const {data} = await Axios.post('/upload', file);
+        const { data } = await Axios.post('/upload', file, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
         setLoading(false);
         toast.success('File uploaded successfully!');
         return data;
@@ -14,4 +17,4 @@ const uploadImageservice = async (file, setLoading) => {
     }
 }
 
-export {uploadImageservice};
+export { uploadImageservice };

@@ -1,6 +1,8 @@
 import asyncHandler from "express-async-handler";
 import { MoviesData } from "../Data/MovieData.js";
 import Movie from "../Models/MoviesModel.js";
+import { searchMovies, upsertMovie, deleteMovie as esDeleteMovie } from "../config/elastic.js";
+
 
 // ************PUBLIC CONTROLLERS******************
 // @desc import movies
@@ -21,43 +23,92 @@ const importMovies = asyncHandler(async (req, res) => {
 
 const getMovies = asyncHandler(async (req, res) => {
   try {
-    // filter movies by category, time, language, rate, year and search
-    const { category, time, language, rate, year, search } = req.query;
-    let query = {
+    const { category, time, language, rate, year, search, sort = "az" } = req.query;
+
+    // ===================== ELASTICSEARCH (ưu tiên) =====================
+    try {
+      const esParams = {
+        q: search || "",
+        category: category || undefined,
+        language: language || undefined,
+        year: year ? Number(year) : undefined,
+        minRate: rate ? Number(rate) : undefined,
+        page: Number(req.query.pageNumber) || 1,
+        limit: 5,
+        sort: ["az", "za", "newest", "oldest", "rate_desc", "rate_asc"].includes(String(sort)) ? sort : "az",
+      };
+
+      const esResp = await searchMovies(esParams);
+      if (esResp && !esResp.error && Array.isArray(esResp.hits)) {
+        return res.json({
+          movies: esResp.hits,          // [{ _id, name, ... }]
+          page: esResp.page,
+          pages: esResp.pages,
+          totalMovies: esResp.total,
+          limit: esResp.limit,
+          sort: esParams.sort,
+        });
+      }
+    } catch (_) {
+      // ES chưa chạy / lỗi → bỏ qua, dùng MongoDB
+    }
+
+    // ===================== FALLBACK MONGODB =====================
+    // Bộ lọc cơ bản theo trường cấu trúc
+    const baseFilters = {
       ...(category && { category }),
       ...(time && { time }),
       ...(language && { language }),
-      ...(rate && { rate }),
       ...(year && { year }),
-      ...(search && { name: { $regex: search, $options: "i" } }),
-    }
+      ...(rate && { rate: { $gte: Number(rate) } }), // rate tối thiểu
+    };
 
-    // load more movies functionality
-    const page = Number(req.query.pageNumber) || 1; // if pageNumber is not provided in query we set it to 1
-    const limit = 6; // 2 movies per page
-    const skip = (page - 1) * limit; // skip 2 movies per page
+    // Tìm kiếm text mở rộng: name, desc, category, language, casts.name
+    const textFilter = search
+      ? {
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { desc: { $regex: search, $options: "i" } },
+          { category: { $regex: search, $options: "i" } },
+          { language: { $regex: search, $options: "i" } },
+          { "casts.name": { $regex: search, $options: "i" } }, // search theo diễn viên
+        ],
+      }
+      : {};
 
-    // find movies by query, skip and limit
+    const query = { ...baseFilters, ...textFilter };
 
-    const movies = await Movie.find(query)
-      .sort({ createAt: -1 })
-      .skip(skip)
-      .limit(limit);
+    // Phân trang
+    const page = Number(req.query.pageNumber) || 1;
+    const limit = 5;
+    const skip = (page - 1) * limit;
 
-    // get total number of movies
-    const count = await Movie.countDocuments(query);
+    // Sort
+    let sortSpec = { name: 1 };     // A → Z
+    if (sort === "za") sortSpec = { name: -1 };      // Z → A
+    if (sort === "newest") sortSpec = { createdAt: -1 }; // mới nhất
+    if (sort === "oldest") sortSpec = { createdAt: 1 };  // cũ nhất
+    if (sort === "rate_desc") sortSpec = { rate: -1 };     // rate cao → thấp
+    if (sort === "rate_asc") sortSpec = { rate: 1 };      // rate thấp → cao
 
-    // send response with movies and total number of movies
-    res.json({
+    const [movies, count] = await Promise.all([
+      Movie.find(query).sort(sortSpec).skip(skip).limit(limit),
+      Movie.countDocuments(query),
+    ]);
+
+    return res.json({
       movies,
       page,
-      pages: Math.ceil(count / limit), // total number of pages
-      totalMovies: count, // total number of movies
+      pages: Math.ceil(count / limit),
+      totalMovies: count,
+      limit,
+      sort,
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 });
+
 
 // @desc get movies by id
 // @route GET /api/movies/:id
@@ -263,6 +314,8 @@ const updateMovie = asyncHandler(async (req, res) => {
 
       // save the movie in database
       const updatedMovie = await movie.save();
+
+      await upsertMovie(updatedMovie._id.toString(), updatedMovie);
       // send the updated movie to the client
       res.status(201).json(updatedMovie);
     } else {
@@ -284,6 +337,8 @@ const deleteMovie = asyncHandler(async (req, res) => {
     // if the movie is found delete it
     if (movie) {
       await movie.deleteOne();
+
+      await esDeleteMovie(req.params.id);
       // send a success message to the client
       res.json({ message: "Movie removed" });
     }
@@ -351,6 +406,8 @@ const createMovie = asyncHandler(async (req, res) => {
     // save the movie in database
     if (movie) {
       const createdMovie = await movie.save();
+
+      await upsertMovie(createdMovie._id.toString(), createdMovie);
       res.status(201).json(createdMovie);
     }
     else {
@@ -361,6 +418,16 @@ const createMovie = asyncHandler(async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+
+// @desc Sync toàn bộ phim từ Mongo sang ES
+// @route POST /api/movies/sync-es
+// @access Private/Admin
+const syncMoviesToES = asyncHandler(async (req, res) => {
+  const result = await syncAllMoviesToES(500);
+  if (result.ok) return res.json({ message: 'Synced to ES', total: result.total });
+  return res.status(500).json({ message: result.error || 'Sync failed' });
+});
+
 
 export {
   importMovies,
@@ -374,4 +441,5 @@ export {
   deleteAllMovies,
   createMovie,
   deleteMovieReview,
+  syncMoviesToES,
 };

@@ -30,23 +30,28 @@ function useAdaptMovies(playbackList) {
 
 export default function ViewHistory() {
     const dispatch = useDispatch();
+    const { userInfo } = useSelector(s => s.userLogin);
     const { loading, items, error } = useSelector((s) => s.continueWatching);
     const movies = useAdaptMovies(items);
-    
 
     useEffect(() => {
-        dispatch(getContinueWatchingAction());
-    }, [dispatch]);
+        if (userInfo?.token) dispatch(getContinueWatchingAction());
+    }, [dispatch, userInfo]);
 
     const prevRef = useRef(null);
     const nextRef = useRef(null);
+
+    if (!userInfo?.token) return null;
+
+    const safeError =
+        error && !/not authorized|no token/i.test(String(error)) ? String(error) : null;
 
     return (
         <div className="my-16 relative">
             {loading ? (
                 <Loader />
-            ) : error ? (
-                <div className="mt-4 text-red-400 text-sm">{String(error)}</div>
+            ) : safeError ? (
+                    <div className="mt-4 text-red-400 text-sm">{safeError}</div>
             ) : movies.length > 0 ? (
                 <>
                     <Titles title="View History" Icon={FaHistory} />

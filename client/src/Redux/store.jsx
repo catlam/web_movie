@@ -3,6 +3,9 @@ import * as User from './Reducers/userReducers';
 import * as categories from './Reducers/categoriesReducers'
 import * as movies from "./Reducers/moviesReducers"; 
 import { continueWatchingReducer } from './Reducers/watchReducers';
+import * as series from './Reducers/seriesReducers'
+import * as season from './Reducers/seasonReducers'
+import * as episode from './Reducers/episodeReducers'
 
 const rootReducer = combineReducers({
     // user reducers
@@ -40,6 +43,33 @@ const rootReducer = combineReducers({
 
     // watch history
     continueWatching: continueWatchingReducer,
+
+    // series reducers
+    seriesList: series.seriesListReducer,
+    seriesDetails: series.seriesDetailsReducer,
+    seriesCreate: series.seriesCreateReducer,
+    seriesUpdate: series.seriesUpdateReducer,
+    seriesDelete: series.seriesDeleteReducer,
+    seriesSummary: series.seriesSummaryReducer,
+    createReviewSeries: series.createReviewReducer,
+    deleteMovieSeries: series.deleteReviewReducer,
+
+    // seasons under a series
+    seasonListBySeries: series.seasonListBySeriesReducer,
+    seasonCreate: series.seasonCreateReducer,
+
+    // season single + episodes list
+    seasonDetails: season.seasonDetailsReducer,
+    seasonUpdate: season.seasonUpdateReducer,
+    seasonDelete: season.seasonDeleteReducer,
+    episodeListBySeason: season.episodeListBySeasonReducer,
+
+    // episode CRUD
+    episodeCreate: episode.episodeCreateReducer,
+    episodeDetails: episode.episodeDetailsReducer,
+    episodeUpdate: episode.episodeUpdateReducer,
+    episodeDelete: episode.episodeDeleteReducer,
+
 })
 
 // get userInfo form localStorage

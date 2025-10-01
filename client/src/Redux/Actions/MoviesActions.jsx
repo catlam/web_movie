@@ -12,6 +12,7 @@ export const getAllMoviesAction = ({
     year = "",
     search = "",
     pageNumber = "",
+    sort = "az",
 }) => async (dispatch) => {
     try {
         dispatch({ type: moviesConstants.MOVIES_LIST_REQUEST })
@@ -23,6 +24,7 @@ export const getAllMoviesAction = ({
             year,
             search,
             pageNumber,
+            sort,
         )
         dispatch({
             type: moviesConstants.MOVIES_LIST_SUCCESS,

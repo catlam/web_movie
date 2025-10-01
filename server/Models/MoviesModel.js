@@ -84,4 +84,14 @@ const moviesSchema = mongoose.Schema(
 );
 
 
+
+moviesSchema.index({
+    name: "text",
+    desc: "text",
+    category: "text",
+    language: "text",
+    "casts.name": "text",
+});
+
+
 export default mongoose.model("Movies", moviesSchema);

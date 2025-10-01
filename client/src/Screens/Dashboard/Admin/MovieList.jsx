@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
-import SideBar from '../SideBar'
-import Table from '../../../Components/Table'
+import React, { useEffect, useState } from 'react';
+import SideBar from '../SideBar';
+import Table from '../../../Components/Table';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteAllMoviesAction, deleteMovieAction, getAllMoviesAction } from '../../../Redux/Actions/MoviesActions';
 import toast from 'react-hot-toast';
@@ -15,67 +15,105 @@ function MoviesList() {
     const { isLoading, isError, movies, pages, page } = useSelector(
         (state) => state.getAllMovies
     );
-    // delete movie
     const { isLoading: deleteLoading, isError: deleteError } = useSelector(
         (state) => state.deleteMovie
     );
-    // delete all movies
     const { isLoading: allLoading, isError: allError } = useSelector(
         (state) => state.deleteAllMovies
     );
 
-    // delete movie handler
+    // --- Search & Sort (A-Z / Z-A) ---
+    const [localSearch, setLocalSearch] = useState("");
+    const [search, setSearch] = useState("");
+    const [sort, setSort] = useState("az"); // 'az' | 'za'
+
+    // Debounce search 300ms
+    useEffect(() => {
+        const t = setTimeout(() => setSearch(localSearch.trim()), 300);
+        return () => clearTimeout(t);
+    }, [localSearch]);
+
+    // Load lần đầu & khi search/sort đổi -> về page 1
+    useEffect(() => {
+        dispatch(getAllMoviesAction({ pageNumber: 1, search, sort }));
+    }, [dispatch, search, sort]);
+
+    // Reload trang hiện tại sau khi xóa
+    const reloadCurrentPage = () => {
+        dispatch(getAllMoviesAction({ pageNumber: page || 1, search, sort }));
+    };
+
     const deleteMovieHandler = (id) => {
         if (window.confirm("Are you sure you want to delete this movie?")) {
-            dispatch(deleteMovieAction(id)).then(() => {
-                dispatch(getAllMoviesAction({ pageNumber: page }));
-            });
+            dispatch(deleteMovieAction(id)).then(reloadCurrentPage);
         }
-    }
+    };
+
     const deleteAllMoviesHandler = () => {
         if (window.confirm("Are you sure you want to delete all movies?")) {
-            dispatch(deleteAllMoviesAction()).then(() => {
-                dispatch(getAllMoviesAction({ pageNumber: page }));
-            });
+            dispatch(deleteAllMoviesAction()).then(() =>
+                dispatch(getAllMoviesAction({ pageNumber: 1, search, sort }))
+            );
         }
-    }
+    };
 
-    // useEffect
+    // Error toast
     useEffect(() => {
-        dispatch(getAllMoviesAction({}))
-        // error
-        if (isError || deleteError || allError) {
-            toast.error(isError)
-        }
-    }, [dispatch, isError, deleteError, allError])
+        if (isError) toast.error(isError);
+        if (deleteError) toast.error(deleteError);
+        if (allError) toast.error(allError);
+    }, [isError, deleteError, allError]);
 
-    // pagination next and prev pages
+    // Pagination
     const nextPage = () => {
-        dispatch(getAllMoviesAction({
-            pageNumber: page + 1,
-        }))
-    }
+        if (page < pages) {
+            dispatch(getAllMoviesAction({ pageNumber: page + 1, search, sort }));
+        }
+    };
     const prevPage = () => {
-        dispatch(getAllMoviesAction({
-            pageNumber: page - 1,
-        }))
-    }
-
+        if (page > 1) {
+            dispatch(getAllMoviesAction({ pageNumber: page - 1, search, sort }));
+        }
+    };
 
     return (
         <SideBar>
             <div className="flex flex-col gap-6">
-                <div className=" flex-btn gap-2">
+                {/* Header + Filters */}
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <h2 className="text-xl font-bold">Movies List</h2>
-                    {
-                        movies?.length > 0 && <button
-                            disabled={allLoading}
-                            onClick={deleteAllMoviesHandler}
-                            className="bg-main font-medium transition hover:bg-subMain border-subMain text-white py-3 px-6 rounded">
-                            {allLoading ? "Deleting..." : "Delete All"}
-                        </button>
-                    }
 
+                    <div className="flex flex-wrap gap-3 items-center">
+                        {/* Search */}
+                        <input
+                            value={localSearch}
+                            onChange={(e) => setLocalSearch(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter') setSearch(localSearch.trim()); }}
+                            placeholder="Search by title…"
+                            className="bg-main border border-border rounded px-4 py-2 text-sm text-white w-56"
+                        />
+
+                        {/* Sort A→Z / Z→A */}
+                        <select
+                            value={sort}
+                            onChange={(e) => setSort(e.target.value)}
+                            className="bg-main border border-border rounded px-3 py-2 text-sm text-white"
+                        >
+                            <option value="az">A → Z</option>
+                            <option value="za">Z → A</option>
+                        </select>
+
+                        {/* Delete All */}
+                        {movies?.length > 0 && (
+                            <button
+                                disabled={allLoading}
+                                onClick={deleteAllMoviesHandler}
+                                className="bg-main font-medium transition hover:bg-subMain border border-subMain text-white py-2.5 px-4 rounded"
+                            >
+                                {allLoading ? "Deleting..." : "Delete All"}
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {isLoading || deleteLoading ? (
@@ -83,18 +121,25 @@ function MoviesList() {
                 ) : movies?.length > 0 ? (
                     <>
                         <Table data={movies} admin={true} onDeleteHandler={deleteMovieHandler} />
-                        {/* Loading More */}
+                        {/* Pagination */}
                         <div className="w-full flex-rows gap-6 my-5">
                             <button
                                 onClick={prevPage}
                                 disabled={page === 1}
-                                className={sameClass}>
+                                className={sameClass}
+                                title="Previous page"
+                            >
                                 <TbPlayerTrackPrev className="text-xl" />
                             </button>
+                            <span className="text-sm text-white/80">
+                                Page {page} / {pages}
+                            </span>
                             <button
                                 onClick={nextPage}
                                 disabled={page === pages}
-                                className={sameClass}>
+                                className={sameClass}
+                                title="Next page"
+                            >
                                 <TbPlayerTrackNext className="text-xl" />
                             </button>
                         </div>
@@ -104,7 +149,7 @@ function MoviesList() {
                 )}
             </div>
         </SideBar>
-    )
+    );
 }
 
 export default MoviesList;
