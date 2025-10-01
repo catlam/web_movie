@@ -28,6 +28,7 @@ import { getFavoriteMoviesAction } from './Redux/Actions/userActions';
 import toast from 'react-hot-toast';
 import EditMovie from './Screens/Dashboard/Admin/EditMovie';
 import SingleSeries from './Screens/SingleSeries';
+import ForgotPassword from './Screens/ForgotPassword';
 
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
           <Route path="/watch/:id" element={<WatchPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgotPassword" element={<ForgotPassword />} />
           <Route path="*" element={<NotFound />} />
 
           {/***********PRIVATE PUBLIC ROUTERS***************/}

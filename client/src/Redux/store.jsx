@@ -20,6 +20,7 @@ const rootReducer = combineReducers({
     adminDeleteUser: User.adminDeleteUserReducer,
     userLikeMovie: User.userLikeMovieReducer,
     userDeleteMovieById: User.userDeleteFavoriteMovieByIdReducer,
+    userForgotPassword: User.userForgotPasswordReducer,
 
 
     // Category reducers

@@ -86,6 +86,22 @@ export const userChangePasswordReducer = (state = {}, action) => {
     }
 }
 
+// FORGOT PASSWORD
+export const userForgotPasswordReducer = (state = {}, action) => {
+    switch (action.type) {
+        case userConstants.USER_FORGOT_PASSWORD_REQUEST:
+            return { loading: true, success: false };
+        case userConstants.USER_FORGOT_PASSWORD_SUCCESS:
+            return { loading: false, success: true, message: action.payload?.message || "Password reset successful" };
+        case userConstants.USER_FORGOT_PASSWORD_FAIL:
+            return { loading: false, success: false, error: action.payload || "Something went wrong" };
+        case userConstants.USER_FORGOT_PASSWORD_RESET:
+            return {};
+        default:
+            return state;
+    }
+};
+
 // GET FAVORITE MOVIES
 export const userGetFavoriteMoviesReducer = (state = { likedMovies: [], }, action) => {
     switch (action.type) {

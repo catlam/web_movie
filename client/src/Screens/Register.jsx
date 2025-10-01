@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import Layout from "../Layout/Layout";
 import { Input } from '../Components/UsedInputs';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiLogIn } from 'react-icons/fi';
+import { FiEye, FiEyeOff, FiLogIn } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { RegisterValidation } from '../Components/Validation/UserValidation';
@@ -10,10 +10,13 @@ import { useForm } from 'react-hook-form';
 import { registerAction } from '../Redux/Actions/userActions';
 import toast from 'react-hot-toast';
 import { InlineError } from '../Components/Notifications/Error';
+import { useState } from 'react';
 
 function Register() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
+
 
     const { isLoading, isError, userInfo, isSuccess } = useSelector(
         (state) => state.userRegister
@@ -54,8 +57,8 @@ function Register() {
     return (
         <Layout>
             <div className="container mx-auto px-2 my-12 flex-colo">
-                <form 
-                    onSubmit={handleSubmit(onSubmit)} 
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
                     className="w-full max-w-md md:max-w-lg xl:max-w-xl gap-5 flex-colo p-8 sm:p-10 bg-dry rounded-lg border border-border">
                     <img
                         src="/images/logo.png"
@@ -87,15 +90,25 @@ function Register() {
                     <div className="w-full">
                         <Input
                             label="Password"
-                            placeholder="******"
-                            type="password"
-                            bg={true}
-                            name="password"
+                            type={showPassword ? "text" : "password"}
                             register={register("password")}
+                            placeholder="*******"
+                            bg={true}
+                            right={
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword((s) => !s)}
+                                    className="text-gray-400"
+                                    aria-label="Toggle password visibility"
+                                >
+                                    {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                                </button>
+                            }
                         />
                         {errors.password && <InlineError text={errors.password.message} />}
                     </div>
-                    <button 
+
+                    <button
                         type="submit"
                         disabled={isLoading}
                         className="bg-subMain transition hover:bg-main flex-rows gap-4 text-white p-4 rounded-lg w-full">
@@ -109,7 +122,7 @@ function Register() {
                                 </>
                             )
                         }
-                        
+
                     </button>
                     <p className="text-center text-border">
                         Already have an account?{" "}
@@ -123,4 +136,4 @@ function Register() {
     )
 }
 
-export default Register
+export default Register;

@@ -74,6 +74,22 @@ const changePasswordAction = (password) => async (dispatch, getState) => {
     }
 } 
 
+// forgot password action
+export const forgotPasswordAction = (email, newPassword) => async (dispatch) => {
+    try {
+        dispatch({ type: userConstants.USER_FORGOT_PASSWORD_REQUEST });
+
+        const response = await userApi.forgotPasswordService({ email, newPassword });
+
+        dispatch({
+            type: userConstants.USER_FORGOT_PASSWORD_SUCCESS,
+            payload: response,
+        });
+    } catch (error) {
+        ErrorsAction(error, dispatch, userConstants.USER_FORGOT_PASSWORD_FAIL);
+    }
+};
+
 // get all favorite movies action
 const getFavoriteMoviesAction = () => async (dispatch, getState) => {
     try {
