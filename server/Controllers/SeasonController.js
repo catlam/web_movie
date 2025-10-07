@@ -19,6 +19,8 @@ export const createSeason = asyncHandler(async (req, res) => {
     if (!s) return res.status(404).json({ message: "Series not found" });
 
     const season = await Season.create({ seriesId, seasonNumber, name, desc });
+    await Series.findByIdAndUpdate(seriesId, { $addToSet: { seasons: season._id } });
+
     res.status(201).json(season);
 });
 

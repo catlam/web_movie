@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import Season from "../Models/SeasonModel.js";
 import Episode from "../Models/EpisodeModel.js";
+import Series from "../Models/SeriesModel.js";
 
 // GET /api/seasons/:seasonId/episodes
 export const listEpisodesOfSeason = asyncHandler(async (req, res) => {
@@ -12,10 +13,11 @@ export const listEpisodesOfSeason = asyncHandler(async (req, res) => {
 // POST /api/seasons/:seasonId/episodes  (admin)
 export const createEpisode = asyncHandler(async (req, res) => {
     const { seasonId } = req.params;
+    const { episodeNumber, title, desc, video, duration, releaseDate } = req.body;
+
     const season = await Season.findById(seasonId);
     if (!season) return res.status(404).json({ message: "Season not found" });
 
-    const { episodeNumber, title, desc, video, duration, releaseDate } = req.body;
     const ep = await Episode.create({
         seriesId: season.seriesId,
         seasonId,
@@ -26,6 +28,14 @@ export const createEpisode = asyncHandler(async (req, res) => {
         duration,
         releaseDate,
     });
+
+    // await Season.findByIdAndUpdate(seasonId, { $addToSet: { episodes: ep._id } });
+    // await Series.findByIdAndUpdate(season.seriesId, { $addToSet: { episodes: ep._id } });
+    await Promise.all([
+        Season.findByIdAndUpdate(seasonId, { $addToSet: { episodes: ep._id } }),
+        Series.findByIdAndUpdate(season.seriesId, { $addToSet: { episodes: ep._id } }),
+    ]);
+
     res.status(201).json(ep);
 });
 

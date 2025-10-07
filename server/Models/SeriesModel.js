@@ -31,10 +31,13 @@ const SeriesSchema = new mongoose.Schema(
         numberOfReviews: { type: Number, default: 0 },
         reviews: [reviewSchema],
         isPremium: { type: Boolean, default: false },
-        tags: [{ type: String, index: true }],
         createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        seasons: [{ type: mongoose.Schema.Types.ObjectId, ref: "Season" }],
+        episodes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Episode" }],
     },
     { timestamps: true }
 );
+
+
 
 export default mongoose.model("Series", SeriesSchema);

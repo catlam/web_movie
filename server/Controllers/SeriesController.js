@@ -29,11 +29,26 @@ export const listSeries = asyncHandler(async (req, res) => {
 });
 
 // GET /api/series/:id
-export const getSeries = asyncHandler(async (req, res) => {
-    const s = await Series.findById(req.params.id);
-    if (!s) return res.status(404).json({ message: "Series not found" });
-    res.json(s);
-});
+export const getSeries = async (req, res) => {
+    try {
+        const series = await Series.findById(req.params.id)
+            .populate({
+                path: "seasons",
+                populate: { path: "episodes" } // populate cả episodes bên trong mỗi season
+            })
+            .populate("episodes"); // nếu có field episodes riêng ở cấp series
+
+        if (!series) {
+            return res.status(404).json({ message: "Series not found" });
+        }
+
+        res.json(series);
+    } catch (error) {
+        console.error("[getSeriesById] error:", error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
 
 // POST /api/series  (admin)
 export const createSeries = asyncHandler(async (req, res) => {

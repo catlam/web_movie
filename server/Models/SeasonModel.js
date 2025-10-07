@@ -11,6 +11,8 @@ const SeasonSchema = new mongoose.Schema(
         seasonNumber: { type: Number, required: true }, // 1, 2, 3...
         name: { type: String, default: "" },            
         desc: { type: String, default: "" },
+        episodes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Episode" }]
+
     },
     { timestamps: true }
 );
