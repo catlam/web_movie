@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import MainModal from './MainModal';
 import { Input } from '../UsedInputs';
-import Uploder from '../Uploder';
+import Uploder from '../Uploader';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -21,7 +21,7 @@ function CastModal({ modalOpen, setModalOpen, cast }) {
     // validation cast
     const {
         register,
-        handleSubmit,  
+        handleSubmit,
         reset,
         setValue,
         formState: { errors },

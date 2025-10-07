@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Input, Message, Select } from '../../../Components/UsedInputs';
 import SideBar from '../SideBar';
-import Uploder from '../../../Components/Uploder';
+import Uploder from '../../../Components/Uploader';
 import { MdDelete } from 'react-icons/md';
 import { FaEdit } from 'react-icons/fa';
 import { ImUpload } from 'react-icons/im'

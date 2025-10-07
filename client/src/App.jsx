@@ -29,6 +29,10 @@ import toast from 'react-hot-toast';
 import EditMovie from './Screens/Dashboard/Admin/EditMovie';
 import SingleSeries from './Screens/SingleSeries';
 import ForgotPassword from './Screens/ForgotPassword';
+import AddSeries from './Screens/Dashboard/Admin/AddSeries';
+import SeriesList from './Screens/Dashboard/Admin/SeriesList';
+import EditSeries from './Screens/Dashboard/Admin/EditSeries';
+import WatchSeriesEpisode from './Screens/WatchSeriesEpisode';
 
 
 function App() {
@@ -71,6 +75,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgotPassword" element={<ForgotPassword />} />
+          <Route path="/watch/episode/:episodeId" element={<WatchSeriesEpisode />} />
+
           <Route path="*" element={<NotFound />} />
 
           {/***********PRIVATE PUBLIC ROUTERS***************/}
@@ -86,6 +92,9 @@ function App() {
               <Route path="/users" element={<Users />} />
               <Route path="/addmovie" element={<AddMovie />} />
               <Route path="/edit/:id" element={<EditMovie />} />
+              <Route path="/addSeries" element={<AddSeries />} />
+              <Route path="/seriesList" element={<SeriesList />} />
+              <Route path="/editSeries/:id" element={<EditSeries />} />
             </Route>
           </Route>
         </Routes>

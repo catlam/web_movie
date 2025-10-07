@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SideBar from './SideBar';
-import Uploder from '../../Components/Uploder';
+import Uploder from '../../Components/Uploader';
 import { Input } from "../../Components/UsedInputs";
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
