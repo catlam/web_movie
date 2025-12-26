@@ -7,8 +7,8 @@ import Series from "../Models/SeriesModel.js";
 import Episode from "../Models/EpisodeModel.js";
 import Season from "../Models/SeasonModel.js";
 
-const FINISH_THRESHOLD = 0.9;   // >=90% coi như hoàn tất
-const MIN_PING_SECONDS = 0;     // bỏ qua ping quá nhỏ
+const FINISH_THRESHOLD = 0.9;   
+const MIN_PING_SECONDS = 0;     
 
 const clampProgress = (position, duration) => {
     const d = Math.max(1, duration || 1);

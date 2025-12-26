@@ -1,9 +1,11 @@
 import toast from "react-hot-toast";
-import { likeMovieAction, deleteFavoriteMovieByIdAction } from "../Redux/Actions/userActions";
+import {
+    likeMovieAction,
+    deleteFavoriteMovieByIdAction,
+} from "../Redux/Actions/userActions";
 
-/** Chuẩn hoá danh sách favorites từ nhiều shape khác nhau của Redux slice */
+/** Chuẩn hoá favorites từ nhiều shape khác nhau của Redux slice */
 const normalizeFavorites = (src) => {
-    // src có thể là: mảng trực tiếp, hoặc object { favorites }, { likedMovies }, { items }
     if (Array.isArray(src)) return src;
     if (src && Array.isArray(src.favorites)) return src.favorites;
     if (src && Array.isArray(src.likedMovies)) return src.likedMovies;
@@ -11,31 +13,93 @@ const normalizeFavorites = (src) => {
     return [];
 };
 
-/** Kiểm tra đã like chưa (chịu lỗi tốt nếu truyền nhầm tham số) */
-export const IfMovieLiked = (favoritesMaybe, itemMaybe) => {
-    // Hỗ trợ cả cách gọi cũ: IfMovieLiked(movie) => luôn false
-    if (!itemMaybe || !itemMaybe?._id) return false;
+/** Lấy id item theo nhiều field khác nhau */
+const getItemId = (item) =>
+    item?._id || item?.id || item?.movieId || item?.seriesId || null;
 
-    const favorites = normalizeFavorites(favoritesMaybe);
-    if (!Array.isArray(favorites) || favorites.length === 0) return false;
+/** Chuẩn hoá kind cho server: "Movie" | "Series" */
+const getServerKind = (item) => {
+    // ưu tiên marker tự set
+    if (item?.__kind === "series") return "Series";
+    if (item?.__kind === "movie") return "Movie";
 
-    const kind = itemMaybe.__kind === "series" ? "series" : "movie"; // mặc định "movie" nếu thiếu
-    return favorites.some((f) => f?._id === itemMaybe._id && (f?.__kind || "movie") === kind);
+    // fallback theo field phổ biến
+    const k = (item?.kind || item?.type || "").toString().toLowerCase();
+    if (k === "series") return "Series";
+    if (k === "movie") return "Movie";
+
+    // nếu không biết thì mặc định Movie (đỡ phá luồng cũ)
+    return "Movie";
 };
 
-/** Toggle like/unlike (hợp nhất movie/series) */
-export const LikeMovie = (item, dispatch, userInfo, favoritesMaybe) => {
-    if (!userInfo?._id) {
-        return toast.error("Please sign in to add to favorites");
+/**
+ * IfMovieLiked: chịu mọi kiểu gọi
+ * - IfMovieLiked(movie)                        // kiểu cũ (TopRated đang dùng)
+ * - IfMovieLiked(favorites, movie)
+ * - IfMovieLiked(movie, favorites)
+ */
+export const IfMovieLiked = (a, b) => {
+    // Case 1: gọi kiểu cũ IfMovieLiked(item)
+    if (b === undefined) {
+        const item = a;
+        const id = getItemId(item);
+        if (!id) return false;
+
+        // ưu tiên lấy favorites từ localStorage nếu có (để không cần truyền redux state)
+        try {
+            const raw = localStorage.getItem("favorites");
+            if (!raw) return false;
+            const favorites = normalizeFavorites(JSON.parse(raw));
+            const kind = getServerKind(item);
+            return favorites.some(
+                (f) => getItemId(f) === id && getServerKind(f) === kind
+            );
+        } catch {
+            return false;
+        }
     }
 
+    // Case 2/3: có 2 tham số, tự đoán cái nào là favorites
+    const favoritesMaybe = Array.isArray(a) || a?.favorites || a?.likedMovies || a?.items ? a : b;
+    const itemMaybe = favoritesMaybe === a ? b : a;
+
     const favorites = normalizeFavorites(favoritesMaybe);
-    const kind = item.__kind === "series" ? "Series" : "Movie"; // server đang nhận "Series"/"Movie"
-    const liked = IfMovieLiked(favorites, item);
+    const id = getItemId(itemMaybe);
+    if (!id) return false;
+
+    const kind = getServerKind(itemMaybe);
+    return favorites.some(
+        (f) => getItemId(f) === id && getServerKind(f) === kind
+    );
+};
+
+/**
+ * Toggle like/unlike (movie/series đều chơi)
+ * favoritesMaybe: optional (nếu có truyền redux favorites vào thì check chuẩn hơn)
+ */
+export const LikeMovie = (item, dispatch, userInfo, favoritesMaybe) => {
+    if (!userInfo?._id) {
+        toast.error("Please sign in to add to favorites");
+        return;
+    }
+
+    const id = getItemId(item);
+    if (!id) {
+        toast.error("Missing item id");
+        return;
+    }
+
+    const kind = getServerKind(item);
+
+    // nếu không truyền favoritesMaybe thì IfMovieLiked(item) sẽ check bằng localStorage (fallback)
+    const liked =
+        favoritesMaybe !== undefined
+            ? IfMovieLiked(favoritesMaybe, item)
+            : IfMovieLiked(item);
 
     if (liked) {
-        dispatch(deleteFavoriteMovieByIdAction({ id: item._id, kind }));
+        dispatch(deleteFavoriteMovieByIdAction({ id, kind }));
     } else {
-        dispatch(likeMovieAction({ id: item._id, kind }));
+        dispatch(likeMovieAction({ id, kind }));
     }
 };

@@ -17,12 +17,12 @@ const planSchema = new mongoose.Schema(
             default: "",
         },
         price: {
-            type: Number,
-            required: true, // giá (VND)
+            monthly: { type: Number, required: true },
+            yearly: { type: Number, default: 0 },
         },
         durationDays: {
             type: Number,
-            default: 30, // thời hạn (ngày)
+            default: 30, 
         },
         features: {
             hd: { type: Boolean, default: false },

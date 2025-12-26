@@ -1,21 +1,28 @@
 import React, { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FaSearch, FaHeart } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { CgUser } from "react-icons/cg";
 import { FiBell } from "react-icons/fi";
+import toast from "react-hot-toast";
+
 import NotificationModal from "../../Components/Modals/NotificationModal";
+import { clearNotifications } from "../../Redux/notificationSlice";
 
 function NavBar() {
   const [search, setSearch] = useState("");
   const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   const navigate = useNavigate();
-  const { userInfo } = useSelector((state) => state.userLogin);
-  const { likedMovies } = useSelector((state) => state.userGetFavoriteMovies);
-  const { unreadCount } = useSelector((state) => state.notifications);
+  const dispatch = useDispatch();
 
-  const hover = "hover:text-subMain transitions text-white";
+  const { userInfo } = useSelector((state) => state.userLogin || {});
+  const { likedMovies } = useSelector(
+    (state) => state.userGetFavoriteMovies || {}
+  );
+  const { unreadCount } = useSelector((state) => state.notifications || {});
+
+  const hover = "hover:text-subMain transition text-white";
   const Hover = ({ isActive }) => (isActive ? "text-subMain" : hover);
 
   const handleSearch = (e) => {
@@ -28,6 +35,17 @@ function NavBar() {
     setSearch("");
   };
 
+  const handleOpenNotifications = () => {
+    if (!userInfo) {
+      toast.error("Please login to view notifications");
+      navigate("/login");
+      return;
+    }
+    setIsNotifOpen(true);
+  };
+
+  // (optional) nếu bạn có nút logout riêng thì nhớ dispatch(clearNotifications())
+
   return (
     <>
       <div className="bg-main shadow-md sticky top-0 z-50">
@@ -35,55 +53,62 @@ function NavBar() {
           <div className="flex items-center justify-between gap-6">
 
             {/* Logo */}
-            <div className="flex-shrink-0">
-              <Link to="/">
-                <img
-                  src="/images/logo.png"
-                  alt="logo"
-                  className="h-11 w-auto object-contain"
-                />
-              </Link>
-            </div>
+            <Link to="/" className="flex-shrink-0">
+              <img
+                src="/images/logo.png"
+                alt="logo"
+                className="h-11 w-auto object-contain"
+              />
+            </Link>
 
-            {/* Search Bar */}
+            {/* Search */}
             <div className="flex-1 max-w-2xl">
-              <form onSubmit={handleSearch} className="w-full">
-                <div className="flex items-center bg-dryGray rounded-lg overflow-hidden shadow-sm">
+              <form onSubmit={handleSearch}>
+                <div className="flex items-center bg-dryGray rounded-lg overflow-hidden">
                   <button
                     type="submit"
                     className="bg-subMain text-white w-12 h-11 flex items-center justify-center"
                   >
-                    <FaSearch className="text-lg" />
+                    <FaSearch />
                   </button>
                   <input
-                    type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search Movie Name..."
-                    className="w-full h-11 px-4 text-sm bg-transparent outline-none text-black placeholder:text-gray-500"
+                    className="w-full h-11 px-4 text-sm bg-transparent outline-none text-black"
                   />
                 </div>
               </form>
             </div>
 
-            {/* Right side: Menu + Icons */}
-            <div className="flex items-center gap-8">
+            {/* Right */}
+            <div className="flex items-center gap-8 text-white">
 
-              {/* Menu chữ (chỉ hiện từ tablet trở lên) */}
-              <div className="hidden md:flex items-center gap-7 xl:gap-9 text-white font-medium text-sm">
+              {/* Menu */}
+              <div className="hidden md:flex items-center gap-7 text-sm font-medium">
                 <NavLink to="/movies" className={Hover}>Movies</NavLink>
                 <NavLink to="/about-us" className={Hover}>About</NavLink>
                 <NavLink to="/contact-us" className={Hover}>Contact</NavLink>
               </div>
 
-              <div className="flex items-center gap-6 text-white">
+              {/* Icons */}
+              <div className="flex items-center gap-6">
+
                 {/* Notification */}
                 <button
-                  onClick={() => setIsNotifOpen(true)}
-                  className="relative hover:text-subMain transitions"
+                  onClick={handleOpenNotifications}
+                  className={`relative ${userInfo
+                      ? "hover:text-subMain"
+                      : "opacity-50 cursor-not-allowed"
+                    }`}
+                  title={
+                    userInfo
+                      ? "Notifications"
+                      : "Login to view notifications"
+                  }
                 >
                   <FiBell className="w-6 h-6" />
-                  {unreadCount > 0 && (
+                  {userInfo && unreadCount > 0 && (
                     <span className="absolute -top-1.5 -right-2 bg-subMain text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                       {unreadCount > 99 ? "99+" : unreadCount}
                     </span>
@@ -91,7 +116,7 @@ function NavBar() {
                 </button>
 
                 {/* Favorites */}
-                <NavLink to="/favorites" className="relative hover:text-subMain transitions">
+                <NavLink to="/favorites" className="relative hover:text-subMain">
                   <FaHeart className="w-6 h-6" />
                   {(likedMovies?.length ?? 0) > 0 && (
                     <span className="absolute -top-1.5 -right-2 bg-subMain text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
@@ -100,10 +125,15 @@ function NavBar() {
                   )}
                 </NavLink>
 
-                {/* User Avatar */}
+                {/* User */}
                 <NavLink
-                  to={userInfo?.isAdmin ? "/dashboard" : userInfo ? "/profile" : "/login"}
-                  className="hover:text-subMain transitions"
+                  to={
+                    userInfo?.isAdmin
+                      ? "/dashboard"
+                      : userInfo
+                        ? "/profile"
+                        : "/login"
+                  }
                 >
                   {userInfo ? (
                     <img
@@ -121,7 +151,11 @@ function NavBar() {
         </div>
       </div>
 
-      <NotificationModal open={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
+      {/* Modal */}
+      <NotificationModal
+        open={isNotifOpen}
+        onClose={() => setIsNotifOpen(false)}
+      />
     </>
   );
 }

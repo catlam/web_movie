@@ -1,6 +1,6 @@
 import express from "express";
-import { createPayment, momoIpn, momoReturn } from "../Controllers/MomoController.js";
-import { protect } from "../middlewares/Auth.js";
+import { createPayment, getPaymentByOrderId, momoIpn, momoReturn, updatePaymentStatus } from "../Controllers/MomoController.js";
+import { protect, admin } from "../middlewares/Auth.js";
 
 const router = express.Router();
 
@@ -14,5 +14,10 @@ router.post("/create", protect, createPayment);
 router.post("/ipn", momoIpn);
 
 router.get("/return", momoReturn); 
+
+router.get("/payment/:orderId", protect, admin, getPaymentByOrderId);
+router.put("/payment/:orderId", protect, admin, updatePaymentStatus);
+
+
 
 export default router;

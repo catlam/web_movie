@@ -27,3 +27,20 @@ dist-ssr
 .env
 
 node_modules/
+
+# Python
+venv/
+env/
+*.pyc
+__pycache__/
+
+# VSCode
+.vscode/
+
+# PyCharm
+.idea/
+
+venv/
+venv311/
+.recommender/venv*/
+.recommender/venv311*/

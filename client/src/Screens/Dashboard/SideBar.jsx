@@ -33,6 +33,11 @@ function SideBar({ children }) {
                     icon: BsFillGridFill
                 },
                 {
+                    name: "Manage Plans",
+                    link: "/plans",
+                    icon: FaListAlt
+                },
+                {
                     name: "Movies List",
                     link: "/movieslist",
                     icon: FaListAlt

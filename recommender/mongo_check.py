@@ -8,7 +8,7 @@ load_dotenv()
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
 DB_NAME   = os.getenv("DB_NAME", "Movie-web")
 WATCH_COL = os.getenv("WATCH_COLLECTION", "playback_state")
-USER_ID   = os.getenv("TEST_USER_ID", "68fa6149d1ca6f56541a4074")  # đổi nếu cần
+USER_ID   = os.getenv("TEST_USER_ID", "68fa6149d1ca6f56541a4074") 
 
 def as_oid(x):
     if isinstance(x, ObjectId):

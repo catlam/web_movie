@@ -121,7 +121,6 @@ function TopRated({ movies, isLoading }) {
   const classNames =
     "hover:bg-dry transitions text-sm rounded w-8 h-8 flex-colo bg-subMain text-white";
 
-  // Lấy đúng 8 phim có rate cao nhất
   const topRatedMovies = useMemo(() => {
     if (!Array.isArray(movies)) return [];
     return [...movies]

@@ -40,6 +40,7 @@ import ChoosePlanPage from './Screens/Landing/ChoosePlanPage';
 import PaymentResult from './Screens/Landing/PaymentResult';
 import SubscriptionProtectedRoute from './SubscriptionProtectedRoute';
 import useNotificationSocket from './Hooks/useNotificationSocket';
+import AdminPlans from './Screens/Dashboard/Admin/AdminPlans';
 
 
 
@@ -116,6 +117,7 @@ function App() {
               <Route path="/addSeries" element={<AddSeries />} />
               <Route path="/seriesList" element={<SeriesList />} />
               <Route path="/editSeries/:id" element={<EditSeries />} />
+              <Route path="/plans" element={<AdminPlans />} />
             </Route>
           </Route>
         </Routes>

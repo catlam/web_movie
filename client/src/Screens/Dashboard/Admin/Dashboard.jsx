@@ -43,7 +43,6 @@ function Dashboard() {
 
   useEffect(() => {
     dispatch(getAllUsersAction());
-    // Lấy “đủ dùng” để snapshot (không cần quá nhiều)
     dispatch(getAllMoviesAction({ pageNumber: 1, limit: 200 }));
     dispatch(listSeriesAction({ pageNumber: 1, limit: 200 }));
     if (isError || catError || userError || seriesError) {

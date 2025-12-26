@@ -21,6 +21,10 @@ import momoRouter from "./Routes/MomoRouter.js";
 import membershipRouter from "./Routes/MembershipRouter.js";
 import notificationRouter from "./Routes/NotificationRouter.js";
 import recoRoutes from "./Routes/recoRoutes.js";
+import PlanRouter from "./Routes/PlanRouter.js";
+import PlanPublicRoutes from "./Routes/PlanPublicRoutes.js";
+
+
 
 import { authSocketMiddleware } from "./socket/authSocket.js";
 import SocketRegistry from "./socket/registry.js";
@@ -60,6 +64,8 @@ app.use("/api/momo", momoRouter);
 app.use("/api/user", membershipRouter);
 app.use("/api/notifications", notificationRouter);
 app.use("/api/reco", recoRoutes);
+app.use("/api/admin/plans", PlanRouter);
+app.use("/api/plans", PlanPublicRoutes);
 
 
 // error handling middleware

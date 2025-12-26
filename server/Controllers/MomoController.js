@@ -5,7 +5,6 @@ import Plan from "../Models/Plan.js";
 import Payment from "../models/Payment.js";
 import Purchase from "../Models/Purchase.js";
 
-// ===== MoMo sandbox credentials (có thể chuyển sang .env) =====
 const accessKey = process.env.MOMO_ACCESS_KEY || "F8BBA842ECF85";
 const secretKey = process.env.MOMO_SECRET_KEY || "K951B6PE1waDMi640xX08PD3vg6EkVlz";
 const partnerCode = process.env.MOMO_PARTNER_CODE || "MOMO";
@@ -14,7 +13,6 @@ const requestType = process.env.MOMO_REQUEST_TYPE || "payWithMethod";
 const redirectUrl = process.env.MOMO_RETURN_URL || "http://localhost:3000/payment/result";
 const ipnUrl = process.env.MOMO_IPN_URL || "http://localhost:5000/api/momo/ipn";
 
-// DEV-only fallback: dùng Query API nếu Return OK nhưng IPN không vào (local)
 const USE_QUERY_ON_RETURN = process.env.USE_QUERY_ON_RETURN === "1";
 
 const G = v => (v === undefined || v === null ? "" : String(v));
@@ -36,6 +34,36 @@ async function momoQuery(orderId, requestId) {
     return data; // { resultCode, message, transId, ... }
 }
 
+async function activateMembershipForPayment(payment, note = "manual") {
+    // payment: document Payment đã lấy từ DB (có userId, planId, amount, ...)
+    const plan = await Plan.findById(payment.planId);
+    const now = new Date();
+    const addMs = (plan?.durationDays || 30) * 24 * 3600 * 1000;
+
+    let sub = await Purchase.findOne({ userId: payment.userId, status: "active" });
+    if (sub && sub.expiresAt > now) {
+        sub.expiresAt = new Date(sub.expiresAt.getTime() + addMs);
+        await sub.save();
+        console.log(`🔄 [${note}] Extended membership for user ${payment.userId} → ${sub.expiresAt.toISOString()}`);
+    } else {
+        const expiresAt = new Date(now.getTime() + addMs);
+        await Purchase.updateOne(
+            { userId: payment.userId },
+            {
+                $set: {
+                    userId: payment.userId,
+                    planId: plan?._id,
+                    status: "active",
+                    startedAt: now,
+                    expiresAt,
+                },
+            },
+            { upsert: true }
+        );
+        console.log(`💎 [${note}] Activated membership for user ${payment.userId} → ${expiresAt.toISOString()}`);
+    }
+}
+
 export const createPayment = async (req, res) => {
     try {
         const userId = req.user?._id;
@@ -49,22 +77,49 @@ export const createPayment = async (req, res) => {
             });
         }
 
+        // 1) Get plan by code
+        const plan = await Plan.findOne({
+            code: planCode.toLowerCase(),
+            isActive: true,
+        });
+        if (!plan) {
+            return res.status(400).json({ message: "Plan not found" });
+        }
 
-        // 1) lấy plan
-        const plan = await Plan.findOne({ code: planCode, isActive: true });
-        if (!plan) return res.status(400).json({ message: "Plan not found" });
+        // 2) Resolve amount based on period (monthly / yearly)
+        const monthlyPrice = plan.price?.monthly;
+        const yearlyPrice = plan.price?.yearly;
 
-        // 2) tính tiền theo period (demo: monthly)
-        const amount = String(plan.price);
+        let rawAmount;
+        if (period === "yearly") {
+            rawAmount =
+                typeof yearlyPrice === "number" && !isNaN(yearlyPrice) && yearlyPrice > 0
+                    ? yearlyPrice
+                    : monthlyPrice;
+        } else {
+            rawAmount = monthlyPrice;
+        }
 
-        const orderInfo = `Buy ${plan.name}`;
+        if (typeof rawAmount !== "number" || isNaN(rawAmount) || rawAmount <= 0) {
+            console.error("[MoMo] Invalid plan price:", {
+                planCode,
+                monthlyPrice,
+                yearlyPrice,
+                period,
+            });
+            return res.status(400).json({ message: "Invalid plan price configuration" });
+        }
+
+        const amount = String(rawAmount);
+
+        const orderInfo = `Buy ${plan.name} (${period})`;
         const orderId = partnerCode + Date.now();
         const requestId = orderId;
         const extraData = "";
         const autoCapture = true;
         const lang = "vi";
 
-        // 3) raw signature theo tài liệu MoMo (create)
+        // 3) raw signature
         const rawSignature =
             `accessKey=${accessKey}` +
             `&amount=${amount}` +
@@ -77,19 +132,23 @@ export const createPayment = async (req, res) => {
             `&requestId=${requestId}` +
             `&requestType=${requestType}`;
 
-        const signature = crypto.createHmac("sha256", secretKey).update(rawSignature).digest("hex");
+        const signature = crypto
+            .createHmac("sha256", secretKey)
+            .update(rawSignature)
+            .digest("hex");
 
-        // 4) lưu payment pending
+        // 4) Save payment pending
         await Payment.create({
             userId,
             planId: plan._id,
             orderId,
             requestId,
-            amount: Number(amount),
+            amount: rawAmount, // Number, không phải NaN
             status: "pending",
+            period, // optional: lưu luôn "monthly"/"yearly"
         });
 
-        // 5) gọi MoMo create
+        // 5) Call MoMo create
         const body = {
             partnerCode,
             partnerName: "Test",
@@ -113,6 +172,7 @@ export const createPayment = async (req, res) => {
             userId: String(userId),
             planCode,
             planName: plan.name,
+            period,
             amount,
             orderId,
             requestId,
@@ -349,5 +409,71 @@ export const momoReturn = async (req, res) => {
     } catch (e) {
         console.error("[momo/return] error:", e);
         return res.status(500).json({ ok: false, reason: "server" });
+    }
+};
+
+export const getPaymentByOrderId = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+
+        const payment = await Payment.findOne({ orderId })
+            .populate("userId", "name email")      // tùy schema User
+            .populate("planId", "code name price durationDays");
+
+        if (!payment) {
+            return res.status(404).json({ message: "Payment not found" });
+        }
+
+        return res.json(payment);
+    } catch (e) {
+        console.error("[momo/getPaymentByOrderId] error:", e.message);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+export const updatePaymentStatus = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const { status } = req.body; // expected: "pending" | "paid" | "failed" | "cancelled" | "refunded"
+
+        const ALLOWED = ["pending", "paid", "failed", "cancelled", "refunded"];
+
+        if (!ALLOWED.includes(status)) {
+            return res.status(400).json({
+                message: `Invalid status. Allowed: ${ALLOWED.join(", ")}`,
+            });
+        }
+
+        const payment = await Payment.findOne({ orderId });
+        if (!payment) {
+            return res.status(404).json({ message: "Payment not found" });
+        }
+
+        const wasPaid = payment.status === "paid";
+        const willBePaid = status === "paid";
+
+        payment.status = status;
+        await payment.save();
+
+        console.log("\n================ [Admin Update Payment] ================");
+        console.table({
+            orderId: payment.orderId,
+            userId: String(payment.userId),
+            oldStatus: payment.status,
+            newStatus: status,
+        });
+        console.log("=========================================================\n");
+
+        if (!wasPaid && willBePaid) {
+            await activateMembershipForPayment(payment, "admin-update");
+        }
+
+        return res.json({
+            message: "Payment updated successfully",
+            payment,
+        });
+    } catch (e) {
+        console.error("[momo/updatePaymentStatus] error:", e.message);
+        return res.status(500).json({ message: "Server error" });
     }
 };
